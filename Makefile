@@ -16,24 +16,23 @@ OUT=bin/myos.bin
 all: $(OUT)
 
 $(OUT): bootloader.bin kernel.bin
-    cat bootloader.bin kernel.bin > $(OUT)
+	cat bootloader.bin kernel.bin > $(OUT)
 
 bootloader.bin: $(BOOT)
-    $(AS) -f bin $< -o $@
+	$(AS) -f bin $< -o $@
 
 kernel.bin: $(KERNEL) $(LINKER)
-    $(CC) $(CFLAGS) -c $< -o kernel/kernel.o
-    $(LD) $(LDFLAGS) kernel/kernel.o -o kernel/kernel.elf
-    objcopy -O binary kernel/kernel.elf kernel/kernel.bin
+	$(CC) $(CFLAGS) -c $< -o kernel/kernel.o
+	$(LD) $(LDFLAGS) kernel/kernel.o -o kernel/kernel.elf
+	objcopy -O binary kernel/kernel.elf kernel/kernel.bin
 
 linker.ld:
-    echo 'ENTRY(kernel_main)\nSECTIONS {\n . = 0x1000;\n .text ALIGN(4):\n { *(.text) }\n .data ALIGN(4):\n { *(.data) }\n .bss ALIGN(4):\n { *(.bss) }\n}' > linker.ld
+	echo 'ENTRY(kernel_main)\nSECTIONS {\n . = 0x1000;\n .text ALIGN(4):\n { *(.text) }\n .data ALIGN(4):\n { *(.data) }\n .bss ALIGN(4):\n { *(.bss) }\n}' > linker.ld
 
 clean:
-    rm -f bootloader.bin kernel/kernel.o kernel/kernel.elf kernel/kernel.bin $(OUT) linker.ld
+	rm -f bootloader.bin kernel/kernel.o kernel/kernel.elf kernel/kernel.bin $(OUT) linker.ld
 
 run: all
-    qemu-system-i386 -fda $(OUT)
+	qemu-system-i386 -fda $(OUT)
 
 .PHONY: all clean run
-
