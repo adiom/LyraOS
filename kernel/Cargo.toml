@@ -1,0 +1,14 @@
+# kernel/Cargo.toml
+[package]
+name = "my_kernel"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[lib]
+name = "my_kernel"
+crate-type = ["staticlib"]
+
+[profile.release]
+panic = "abort"

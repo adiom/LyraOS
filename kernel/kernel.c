@@ -1,11 +1,29 @@
-// kernel.c
-void kernel_main() {
-    const char *message = "Hello from Kernel!";
-    char *video_memory = (char *)0xB8000;
-    for(int i = 0; message[i] != '\0'; i++) {
-        video_memory[i*2] = message[i];
-        video_memory[i*2+1] = 0x07; // Атрибут цвета
-    }
-    while(1);
+// kernel/kernel.c
+
+#define UART0_BASE 0x10000000
+#define UART_DR    (*(volatile unsigned int *)(UART0_BASE + 0x00))
+#define UART_FR    (*(volatile unsigned int *)(UART0_BASE + 0x18))
+#define UART_FR_TXFF (1 << 5)
+
+void uart_send(char c) {
+    // Ожидание, пока FIFO передачи не будет полон
+    while (UART_FR & UART_FR_TXFF);
+    // Запись символа в UART_DR
+    UART_DR = c;
 }
 
+void uart_send_string(const char *str) {
+    while (*str) {
+        uart_send(*str++);
+    }
+}
+
+void kernel_entry() {
+    uart_send_string("Hello from kernel\n");
+    while (1) {}
+}
+
+// Обработчик паники (необходим для корректной компиляции)
+void __attribute__((noreturn)) panic_handler() {
+    while (1) {}
+}

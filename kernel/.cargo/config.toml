@@ -1,0 +1,7 @@
+# kernel/.cargo/config.toml
+[target.aarch64-unknown-none]
+linker = "aarch64-elf-ld"
+rustflags = [
+  "-C", "link-arg=-T../../linker.ld",
+]
+
